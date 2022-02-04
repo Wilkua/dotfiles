@@ -35,8 +35,25 @@ function git_branch {
     fi
 }
 
+function task_count {
+    which task 2>/dev/null >/dev/null || return
+
+    local count="$(task +PENDING count)"
+    local active="$(task +ACTIVE count)"
+    local output=""
+    if [ "0" -lt $active ]; then
+        output+="$active/"
+    fi
+    if [ "0" -lt $count ]; then
+        output+="$count"
+    fi
+    if [ -n $output ]; then
+        echo "{$output} "
+    fi
+}
+
 setopt PROMPT_SUBST
-export PROMPT='$(git_branch)%B%F{cyan}%2~%b%F{white} %# %f%k'
+export PROMPT='$(git_branch)$(task_count)%B%F{cyan}[%n] %2~%b%F{white} %# %f%k'
 
 setopt histignorealldups sharehistory
 
